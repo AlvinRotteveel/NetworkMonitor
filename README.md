@@ -16,8 +16,8 @@ Preconditions:
 Must run on Linux
 Must be written in Python
 Must have minimum negative impact on connection conditions
-Must have simple user interface
-Must have text based user interface
+Must have simple user interface -> npyscreen
+Must have text based user interface -> npyscreen
 Must show real time data
 Must show historic data
 Must have modular / extendible user interface
@@ -48,3 +48,10 @@ What are their concerns?
 What options are there to deal with the concerns?
 What are the design decisions?
  Make the views that show all design decisions.
+
+################
+# Dependencies #
+################
+
+npyscreen
+socket
