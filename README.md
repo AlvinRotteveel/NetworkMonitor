@@ -47,7 +47,7 @@ Who are the stakeholders?
 What are their concerns?
 What options are there to deal with the concerns?
 What are the design decisions?
- Make the views that show all design decisions.
+Make the views that show all design decisions.
 
 ################
 # Dependencies #
