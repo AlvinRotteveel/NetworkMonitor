@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Loopy.iml" filepath="$PROJECT_DIR$/.idea/Loopy.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/NetworkMonitor.iml" filepath="$PROJECT_DIR$/.idea/NetworkMonitor.iml" />
     </modules>
   </component>
 </project>
