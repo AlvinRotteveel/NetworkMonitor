@@ -52,3 +52,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Dump files
+agent/dump/

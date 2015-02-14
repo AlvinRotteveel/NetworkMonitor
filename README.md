@@ -1,4 +1,4 @@
-# networkmonitor
+# Loopy - Network Monitor
 Unix Networkprogramming: Network Monitori
 
 Case
