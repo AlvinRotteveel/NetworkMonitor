@@ -12,9 +12,16 @@ class TCPDump():
 
     def start(self):
         """Start the execution of TCPDump"""
-        self.process = subprocess.Popen(['/usr/sbin/tcpdump ' + '-w ' + self.dumppath + ' -C 10 -W 10'],
+        while True:
+            self.process = subprocess.Popen(['/usr/sbin/tcpdump'],
                                         shell=True, preexec_fn=os.setsid)
+            self.process.wait()
 
     def stop(self):
         """Stop the execution of TCPDump"""
         os.killpg(self.process.pid, signal.SIGTERM)
+
+    def getdumps(self, *args):
+        """Get the paths or amount of paths"""
+        if args == 'amount':
+            return os.listdir(self.dumppath)
