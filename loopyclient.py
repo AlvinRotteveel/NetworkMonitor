@@ -1,11 +1,8 @@
-#!/usr/bin/python
-from client import home
-import sys
+import os
+import curses
+from client import gui
 
 
 if __name__ == "__main__":
-    try:
-        client = home.Client().run()
-    except KeyboardInterrupt:
-        print("Quiting...")
-        sys.exit()
+    os.environ["TERM"] = "xterm"
+    curses.wrapper(gui.View)
