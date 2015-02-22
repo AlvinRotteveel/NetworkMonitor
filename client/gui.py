@@ -7,7 +7,8 @@ from curses.ascii import (isalnum,
                           SP,
                           TAB)
 
-def View(stdscr):
+
+def view(stdscr):
     set_dimensions(stdscr)
     stdscr.keypad(1)
     curses.curs_set(0)
@@ -20,16 +21,21 @@ def View(stdscr):
 
     home(stdscr)
 
+
 def home(stdscr):
     stdscr.clear()
     stdscr.border()
     draw_logo(stdscr)
     centered(stdscr, 25, "Welcome to Loopy! Network Traffic Analyzer")
-    centered(stdscr, 26, "(q/ESC) quit")
+    centered(stdscr, 27, "Choose an option                          ")
+    centered(stdscr, 28, "[1] Live network traffic                  ")
+    centered(stdscr, 29, "[2] Network traffic history               ")
+    centered(stdscr, 30, "[3] Other...                              ")
+    centered(stdscr, 32, "[ESC] Quit                                ")
     stdscr.refresh()
 
-    return act_on_input(stdscr, {"q": confirm_quit,
-                                 ESC: quit})
+    return act_on_input(stdscr, {ESC: quit})
+
 
 def set_dimensions(screen):
     global WIDTH
@@ -37,29 +43,30 @@ def set_dimensions(screen):
 
     HEIGHT, WIDTH = screen.getmaxyx()
 
+
 def draw_logo(stdscr):
     x = (WIDTH - 100) // 2
-    addstr(stdscr, 2, x, "                                                            @@@.                                   ")
-    addstr(stdscr, 3, x, "                                                           @@@@@                                   ")
-    addstr(stdscr, 4, x, " %%%,                                                    #@@@@#                                    ")
-    addstr(stdscr, 5, x, " @@@*                                                   @@@@@                                      ")
-    addstr(stdscr, 6, x, " @@@*                                                  %@@@@                                       ")
-    addstr(stdscr, 7, x, " @@@*                                           ...    @@.                                         ")
-    addstr(stdscr, 8, x, " @@@*                 .@@@@@@@@@@/         /@@@@@@@@@@@@      @@@ /@@@@@@@@%     (@@@          @@@ ")
-    addstr(stdscr, 9, x, " @@@*               (@@@@@,   .@@@@&     #@@@@%    (@@@@@     @@@@@@,    &@@@@    @@@#        &@@, ")
-    addstr(stdscr, 10, x, " @@@*              @@@@@         @@@@   @@@@(         @@@@,   @@@@         &@@@    @@@.      ,@@%  ")
-    addstr(stdscr, 11, x, " @@@*             %@@@@           @@@& *@@@%          ,@@@@   @@@           @@@,    @@@      @@@   ")
-    addstr(stdscr, 12, x, " @@@*             @@@@@           &@@@ &@@@.           @@@@   @@@           %@@%    .@@&    @@@    ")
-    addstr(stdscr, 13, x, " @@@*             @@@@@           @@@@ #@@@*           @@@@   @@@           &@@#     (@@*  /@@.    ")
-    addstr(stdscr, 14, x, " @@@*             .@@@@,         .@@@,  @@@@          &@@@(   @@@#          @@@       &@@  @@(     ")
-    addstr(stdscr, 15, x, " @@@*               @@@@&       %@@@,    @@@@,       @@@@,    @@@@@       ,@@@,        @@@@@@      ")
-    addstr(stdscr, 16, x, " @@@@@@@@@@@@@@@@@   @@@@@@@@@@@@@%        @@@@@@@@@@@@/      @@@.@@@@@@@@@@@           @@@@       ")
-    addstr(stdscr, 17, x, "                  ,@@@  .%@@@@&,              .(%%#,          @@@    *#%/.              @@@        ")
-    addstr(stdscr, 18, x, "                &@@@@                                         @@@                      (@@*        ")
-    addstr(stdscr, 19, x, "               @@@@@                                          @@@                  . .@@@#         ")
-    addstr(stdscr, 20, x, "             @@@@@#                                           @@@                  @@@@@           ")
-    addstr(stdscr, 21, x, "           ,@@@@@                                                                                  ")
-    addstr(stdscr, 22, x, "             &@/                                                                                   ")
+    addstr(stdscr, 2, x, "                                                            @@@.                                   ",curses.color_pair(2))
+    addstr(stdscr, 3, x, "                                                           @@@@@                                   ",curses.color_pair(2))
+    addstr(stdscr, 4, x, " %%%,                                                    #@@@@#                                    ",curses.color_pair(2))
+    addstr(stdscr, 5, x, " @@@*                                                   @@@@@                                      ",curses.color_pair(2))
+    addstr(stdscr, 6, x, " @@@*                                                  %@@@@                                       ",curses.color_pair(2))
+    addstr(stdscr, 7, x, " @@@*                                           ...    @@.                                         ",curses.color_pair(2))
+    addstr(stdscr, 8, x, " @@@*                 .@@@@@@@@@@/         /@@@@@@@@@@@@      @@@ /@@@@@@@@%     (@@@          @@@ ",curses.color_pair(2))
+    addstr(stdscr, 9, x, " @@@*               (@@@@@,   .@@@@&     #@@@@%    (@@@@@     @@@@@@,    &@@@@    @@@#        &@@, ",curses.color_pair(2))
+    addstr(stdscr, 10, x, " @@@*              @@@@@         @@@@   @@@@(         @@@@,   @@@@         &@@@    @@@.      ,@@%  ",curses.color_pair(2))
+    addstr(stdscr, 11, x, " @@@*             %@@@@           @@@& *@@@%          ,@@@@   @@@           @@@,    @@@      @@@   ",curses.color_pair(2))
+    addstr(stdscr, 12, x, " @@@*             @@@@@           &@@@ &@@@.           @@@@   @@@           %@@%    .@@&    @@@    ",curses.color_pair(2))
+    addstr(stdscr, 13, x, " @@@*             @@@@@           @@@@ #@@@*           @@@@   @@@           &@@#     (@@*  /@@.    ",curses.color_pair(2))
+    addstr(stdscr, 14, x, " @@@*             .@@@@,         .@@@,  @@@@          &@@@(   @@@#          @@@       &@@  @@(     ",curses.color_pair(2))
+    addstr(stdscr, 15, x, " @@@*               @@@@&       %@@@,    @@@@,       @@@@,    @@@@@       ,@@@,        @@@@@@      ",curses.color_pair(2))
+    addstr(stdscr, 16, x, " @@@@@@@@@@@@@@@@@   @@@@@@@@@@@@@%        @@@@@@@@@@@@/      @@@.@@@@@@@@@@@           @@@@       ",curses.color_pair(2))
+    addstr(stdscr, 17, x, "                  ,@@@  .%@@@@&,              .(%%#,          @@@    *#%/.              @@@        ",curses.color_pair(2))
+    addstr(stdscr, 18, x, "                &@@@@                                         @@@                      (@@*        ",curses.color_pair(2))
+    addstr(stdscr, 19, x, "               @@@@@                                          @@@                  . .@@@#         ",curses.color_pair(2))
+    addstr(stdscr, 20, x, "             @@@@@#                                           @@@                  @@@@@           ",curses.color_pair(2))
+    addstr(stdscr, 21, x, "           ,@@@@@                                                                                  ",curses.color_pair(2))
+    addstr(stdscr, 22, x, "             &@/                                                                                   ",curses.color_pair(2))
 
 
 def addstr(win, y, x, s, *args):
@@ -74,8 +81,10 @@ def addstr(win, y, x, s, *args):
 
     return win.addstr(y, x, s, *args)
 
+
 def centered(win, y, message, *args):
     addstr(win, y, int((WIDTH - len(message)) // 2), message, *args)
+
 
 def act_on_input(screen, actions):
     def key(k):
@@ -92,18 +101,8 @@ def act_on_input(screen, actions):
         elif not isinstance(actions, dict):
             return actions(screen)
         else:
-            for k,v in actions.iteritems():
+            for k, v in actions.items():
                 if ev in key(k):
                     if isinstance(v, list):
                         return v[0](*v[1:])
                     return v(screen)
-
-def confirm_quit(screen):
-    screen.clear()
-    screen.border()
-    draw_logo(screen)
-    centered(screen, 20, "QUITING LOOPY")
-    centered(screen, 24, "Quit? (y/n)")
-    screen.refresh()
-
-    return act_on_input(screen, {"y": quit, "n": home})

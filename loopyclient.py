@@ -5,4 +5,4 @@ from client import gui
 
 if __name__ == "__main__":
     os.environ["TERM"] = "xterm"
-    curses.wrapper(gui.View)
+    curses.wrapper(gui.view)
