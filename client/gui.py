@@ -34,14 +34,16 @@ def home(stdscr):
     centered(stdscr, 29, "[2] Network traffic history               ")
     centered(stdscr, 30, "[3] Connect to agent                      ")
     centered(stdscr, 31, "[4] Run as agent                          ")
-    centered(stdscr, 33, "[ESC] Quit                                ")
+    centered(stdscr, 32, "[5] Bunny!                                ")
+    centered(stdscr, 34, "[ESC] Quit                                ")
     stdscr.refresh()
 
     return act_on_input(stdscr, {ESC: quit,
                                  "1": live,
                                  "2": history,
                                  "3": connect,
-                                 "4": agent})
+                                 "4": agent,
+                                 "5": bunny})
 
 
 def live(stdscr):
@@ -62,6 +64,41 @@ def connect(stdscr):
 def agent(stdscr):
     stdscr.clear()
     stdscr.border()
+
+
+def bunny(stdscr):
+    stdscr.clear()
+    stdscr.border()
+
+    centered(stdscr, 6, "                          +MM0^            ")
+    centered(stdscr, 7, "                           +MMMM1          ")
+    centered(stdscr, 8, "                           0MMNMM+         ")
+    centered(stdscr, 9, "                           +MMMNNN         ")
+    centered(stdscr, 10, "              ^^++++^^      1MMM0N1++^     ")
+    centered(stdscr, 11, "         +1o00000o00000oooo1+oMM000MM00o^  ")
+    centered(stdscr, 12, "       10000o000000000oo000oo00MNNMMMM000+ ")
+    centered(stdscr, 13, "     o000oo0o00o0000o0000000o0000MMMMN0000+")
+    centered(stdscr, 14, "   +0000000000000000oo000000000000NNN0000N0")
+    centered(stdscr, 15, "  +000000NMMMMMNN00000000000000NN00000000o^")
+    centered(stdscr, 16, "  0000MMMMMMMMMMMMMN00000000000MMNNMo1+^^  ")
+    centered(stdscr, 17, "  0000MMMMMN000000NNNo000000000NMM1+       ")
+    centered(stdscr, 18, "  100000000000000000NN00ooo000001^         ")
+    centered(stdscr, 19, " 1o0000o00000000000000N000000N+            ")
+    centered(stdscr, 20, "NMMMM0o00000000000000000000MM0             ")
+    centered(stdscr, 21, "+o0MMMoo000000000000000000NNMNo1^          ")
+    centered(stdscr, 22, "      ^o000000000o000ooooo0000NM0          ")
+    centered(stdscr, 24, "            (h) home (q) quit              ")
+
+    stdscr.refresh()
+
+    while True:
+            ev = stdscr.getch()
+            if ev == ord("q"):
+                return quit
+            elif ev == curses.KEY_RESIZE:
+                set_dimensions(stdscr)
+            elif ev == ord("h"):
+                return home(stdscr)
 
 
 def set_dimensions(screen):
