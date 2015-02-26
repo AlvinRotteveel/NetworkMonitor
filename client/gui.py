@@ -1,6 +1,5 @@
 import curses
 import itertools
-import time
 from curses.ascii import (isalnum,
                           BS,
                           DEL,
@@ -33,7 +32,7 @@ def home(stdscr):
     centered(stdscr, 28, "[1] Live network traffic                  ")
     centered(stdscr, 29, "[2] Network traffic history               ")
     centered(stdscr, 30, "[3] Connect to agent                      ")
-    centered(stdscr, 31, "[4] Run as agent                          ")
+    centered(stdscr, 31, "[4] Run agent                             ")
     centered(stdscr, 32, "[5] Bunny!                                ")
     centered(stdscr, 34, "[ESC] Quit                                ")
     stdscr.refresh()
@@ -65,6 +64,33 @@ def agent(stdscr):
     stdscr.clear()
     stdscr.border()
 
+    centered(stdscr, 5, "Current status of the network capture agent")
+    # Some ASCII icon to show the current status.....
+    centered(stdscr, 34, "Press (S) to start the agent, (K) to kill it, or go home (H)")
+    stdscr.refresh()
+
+    while True:
+            ev = stdscr.getch()
+            if ev == ord("s"):
+                agent_status("start")
+            elif ev == ord("k"):
+                if not agent_status("stop"):
+                    centered(stdscr, 38, "Nothing to kill here, go kill a bunny!",curses.color_pair(5))
+                    stdscr.refresh()
+            elif ev == ord("h"):
+                return home(stdscr)
+            elif ev == curses.KEY_RESIZE:
+                set_dimensions(stdscr)
+
+
+def agent_status(action):
+    # Initiate and start the capturing agent
+    dump = capture.TCPDump()
+    if action == "start":
+        dump.start()
+    elif action == "stop":
+        r = dump.stop()
+        return r
 
 def bunny(stdscr):
     stdscr.clear()
@@ -87,7 +113,8 @@ def bunny(stdscr):
     centered(stdscr, 20, "NMMMM0o00000000000000000000MM0             ")
     centered(stdscr, 21, "+o0MMMoo000000000000000000NNMNo1^          ")
     centered(stdscr, 22, "      ^o000000000o000ooooo0000NM0          ")
-    centered(stdscr, 24, "            (h) home (q) quit              ")
+    centered(stdscr, 24, "            Get back to work!              ")
+    centered(stdscr, 26, "            (H) home (Q) quit              ")
 
     stdscr.refresh()
 

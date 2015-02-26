@@ -19,4 +19,9 @@ class TCPDump():
 
     def stop(self):
         """Stop the execution of TCPDump"""
-        os.killpg(self.process.pid, signal.SIGTERM)
+        try:
+            os.killpg(self.process.pid, signal.SIGTERM)
+            return True
+        except:
+            return False
+
