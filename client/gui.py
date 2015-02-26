@@ -1,11 +1,13 @@
 import curses
 import itertools
+import time
 from curses.ascii import (isalnum,
                           BS,
                           DEL,
                           ESC,
                           SP,
                           TAB)
+from agent import capture
 
 
 def view(stdscr):
@@ -30,11 +32,36 @@ def home(stdscr):
     centered(stdscr, 27, "Choose an option                          ")
     centered(stdscr, 28, "[1] Live network traffic                  ")
     centered(stdscr, 29, "[2] Network traffic history               ")
-    centered(stdscr, 30, "[3] Other...                              ")
-    centered(stdscr, 32, "[ESC] Quit                                ")
+    centered(stdscr, 30, "[3] Connect to agent                      ")
+    centered(stdscr, 31, "[4] Run as agent                          ")
+    centered(stdscr, 33, "[ESC] Quit                                ")
     stdscr.refresh()
 
-    return act_on_input(stdscr, {ESC: quit})
+    return act_on_input(stdscr, {ESC: quit,
+                                 "1": live,
+                                 "2": history,
+                                 "3": connect,
+                                 "4": agent})
+
+
+def live(stdscr):
+    stdscr.clear()
+    stdscr.border()
+
+
+def history(stdscr):
+    stdscr.clear()
+    stdscr.border()
+
+
+def connect(stdscr):
+    stdscr.clear()
+    stdscr.border()
+
+
+def agent(stdscr):
+    stdscr.clear()
+    stdscr.border()
 
 
 def set_dimensions(screen):
