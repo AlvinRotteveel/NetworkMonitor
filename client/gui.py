@@ -66,31 +66,20 @@ def agent(stdscr):
 
     centered(stdscr, 5, "Current status of the network capture agent")
     # Some ASCII icon to show the current status.....
-    centered(stdscr, 34, "Press (S) to start the agent, (K) to kill it, or go home (H)")
+    centered(stdscr, 34, "Press (S) to start the agent, or (K) to kill it, home (H)")
     stdscr.refresh()
 
     while True:
             ev = stdscr.getch()
             if ev == ord("s"):
-                agent_status("start")
+                capture.start()
             elif ev == ord("k"):
-                if not agent_status("stop"):
-                    centered(stdscr, 38, "Nothing to kill here, go kill a bunny!",curses.color_pair(5))
-                    stdscr.refresh()
+                capture.stop()
             elif ev == ord("h"):
                 return home(stdscr)
             elif ev == curses.KEY_RESIZE:
                 set_dimensions(stdscr)
 
-
-def agent_status(action):
-    # Initiate and start the capturing agent
-    dump = capture.TCPDump()
-    if action == "start":
-        dump.start()
-    elif action == "stop":
-        r = dump.stop()
-        return r
 
 def bunny(stdscr):
     stdscr.clear()
