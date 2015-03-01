@@ -13,6 +13,9 @@ class TCPDump():
 
     def start(self):
         """Start the execution of TCPDump"""
+        if not os.path.exists(self.dumppath):
+            os.makedirs(self.dumppath)
+
         self.process = subprocess.Popen(['/usr/sbin/tcpdump -s65535 -G 100 -C 100 -W 1 -w' + self.dumppath],
                                     shell=True, preexec_fn=os.setsid)
         self.process.wait()
