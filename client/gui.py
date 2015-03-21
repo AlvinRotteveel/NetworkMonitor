@@ -68,7 +68,7 @@ def agent(stdscr):
     stdscr.border()
 
     centered(stdscr, 5, "Current status of the network capture agent")
-    # Some ASCII icon to show the current status.....
+    centered(stdscr, 18, "Off", curses.color_pair(5))
     centered(stdscr, 34, "Press (S) to start the agent, or (K) to kill it, home (H)")
     stdscr.refresh()
 
@@ -77,8 +77,10 @@ def agent(stdscr):
             if ev == ord("s"):
                 sniffer.__init__()
                 sniffer.start()
+                agent_on(stdscr)
             elif ev == ord("k"):
                 sniffer.cancel()
+                agent(stdscr)
             elif ev == ord("h"):
                 return home(stdscr)
             elif ev == curses.KEY_RESIZE:
@@ -125,13 +127,9 @@ def agent_on(stdscr):
     stdscr.clear()
     stdscr.border()
 
-    stdscr.refresh()
-
-
-def agent_off(stdscr):
-    stdscr.clear()
-    stdscr.border()
-
+    centered(stdscr, 5, "Current status of the network capture agent")
+    centered(stdscr, 18, "On", curses.color_pair(2))
+    centered(stdscr, 34, "Press (S) to start the agent, or (K) to kill it, home (H)")
     stdscr.refresh()
 
 
