@@ -72,7 +72,7 @@ def agent(stdscr):
     while True:
             ev = stdscr.getch()
             if ev == ord("s"):
-                capture.start()
+                capture.start_capture()
             elif ev == ord("k"):
                 capture.stop()
             elif ev == ord("h"):
@@ -115,6 +115,20 @@ def bunny(stdscr):
                 set_dimensions(stdscr)
             elif ev == ord("h"):
                 return home(stdscr)
+
+
+def agent_on(stdscr):
+    stdscr.clear()
+    stdscr.border()
+
+    stdscr.refresh()
+
+
+def agent_off(stdscr):
+    stdscr.clear()
+    stdscr.border()
+
+    stdscr.refresh()
 
 
 def set_dimensions(screen):
