@@ -1,6 +1,7 @@
 import socket
 import sys
 from struct import *
+from database import add_packet
 
 
 #Convert a string of 6 characters of ethernet address into a dash separated hex string

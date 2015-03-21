@@ -1,17 +1,22 @@
 import sqlite3 as lite
 
 
+table_name = 'PACKETS'
+
 # Connect to dump database. Create if it doesnt exist.
-datab = lite.connect('dump.db')
+datab = lite.connect('dump.db', isolation_level=None)
 #Create table if it doesnt exist
+c = datab.cursor()
+
+
 datab.execute('''CREATE TABLE IF NOT EXISTS PACKETS
-       (ID  INTEGER PRIMARY KEY AUTOINCREMENT,
-       DESTMAC          TEXT    NOT NULL,
-       SRCMAC           TEXT    NOT NULL,
-       PROTOCOL         TEXT    NOT NULL);''')
+   (ID  INTEGER PRIMARY KEY AUTOINCREMENT,
+   DSTMAC       TEXT,
+   SRCMAC       TEXT,
+   PROTOCOL     TEXT);''')
 
 
-def add_packet(destmac, srcmac, protocol):
+def add_packet(dmac, smac, prot):
     """Insert a channel in the database"""
-    datab.execute("INSERT INTO PACKETS (DESTMAC,SRCMAC,PROTOCOL) "
-                  "VALUES (" + destmac + ", " + srcmac + ", " + protocol + ")")
+    c.execute('''INSERT INTO PACKETS (DSTMAC, SRCMAC, PROTOCOL) VALUES (?,?,?)''',
+        (dmac, smac, prot))
