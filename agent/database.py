@@ -4,7 +4,7 @@ import sqlite3 as lite
 table_name = 'PACKETS'
 
 # Connect to dump database. Create if it doesnt exist.
-datab = lite.connect('dump.db', isolation_level=None)
+datab = lite.connect('agent/dump.db', isolation_level=None, check_same_thread=False)
 #Create table if it doesnt exist
 c = datab.cursor()
 
@@ -34,21 +34,21 @@ datab.execute('''CREATE TABLE IF NOT EXISTS PACKETS
 
 def add_tcp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, seq, ack, tcphl):
     """Insert a channel in the database"""
-    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT, DSTPRT,
-    SEQUENCE, ACK, TCPHL)
+    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT,
+    DSTPRT, SEQUENCE, ACK, TCPHL)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
               (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, seq, ack, tcphl))
 
 def add_icmp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, cmptyp, code, chksm):
     """Insert a channel in the database"""
-    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, ICMPTYPE, CODE,
-    CHCKSM)
+    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, ICMPTYPE,
+    CODE, CHCKSM)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)''',
               (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, cmptyp, code, chksm))
 
 def add_udp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, len, chksm):
     """Insert a channel in the database"""
-    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT, DSTPRT,
-    LENGTH, CHCKSM)
+    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT,
+    DSTPRT, LENGTH, CHCKSM)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''',
               (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, len, chksm))

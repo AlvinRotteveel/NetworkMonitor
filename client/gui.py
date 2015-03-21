@@ -6,7 +6,10 @@ from curses.ascii import (isalnum,
                           ESC,
                           SP,
                           TAB)
-from agent import capture
+from agent.capture import SocketCapture
+
+
+sniffer = SocketCapture()
 
 
 def view(stdscr):
@@ -72,9 +75,10 @@ def agent(stdscr):
     while True:
             ev = stdscr.getch()
             if ev == ord("s"):
-                capture.start_capture()
+                sniffer.__init__()
+                sniffer.start()
             elif ev == ord("k"):
-                capture.stop()
+                sniffer.cancel()
             elif ev == ord("h"):
                 return home(stdscr)
             elif ev == curses.KEY_RESIZE:
