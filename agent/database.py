@@ -11,12 +11,44 @@ c = datab.cursor()
 
 datab.execute('''CREATE TABLE IF NOT EXISTS PACKETS
    (ID  INTEGER PRIMARY KEY AUTOINCREMENT,
-   DSTMAC       TEXT,
+   TYPE         TEXT,
    SRCMAC       TEXT,
-   PROTOCOL     TEXT);''')
+   DSTMAC       TEXT,
+   PROTOCOL     TEXT,
+   VERSION      TEXT,
+   IPHL         TEXT,
+   TTL          TEXT,
+   SRCADR       TEXT,
+   DSTADR       TEXT,
+   SRCPRT       TEXT,
+   DSTPRT       TEXT,
+   SEQUENCE     TEXT,
+   ACK          TEXT,
+   TCPHL        TEXT,
+   ICMPTYPE     TEXT,
+   CODE         TEXT,
+   CHCKSM       TEXT,
+   LENGTH       TEXT,
+   DATA         TEXT);''')
 
 
-def add_packet(dmac, smac, prot):
+def add_tcp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, seq, ack, tcphl):
     """Insert a channel in the database"""
-    c.execute('''INSERT INTO PACKETS (DSTMAC, SRCMAC, PROTOCOL) VALUES (?,?,?)''',
-        (dmac, smac, prot))
+    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT, DSTPRT,
+    SEQUENCE, ACK, TCPHL)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
+              (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, seq, ack, tcphl))
+
+def add_icmp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, cmptyp, code, chksm):
+    """Insert a channel in the database"""
+    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, ICMPTYPE, CODE,
+    CHCKSM)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)''',
+              (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, cmptyp, code, chksm))
+
+def add_udp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, len, chksm):
+    """Insert a channel in the database"""
+    c.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT, DSTPRT,
+    LENGTH, CHCKSM)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''',
+              (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, len, chksm))

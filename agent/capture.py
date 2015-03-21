@@ -1,7 +1,7 @@
 import socket
 import sys
 from struct import *
-from database import add_packet
+from database import add_tcp_packet, add_icmp_packet, add_udp_packet
 
 
 #Convert a string of 6 characters of ethernet address into a dash separated hex string
@@ -31,12 +31,6 @@ def start_capture():
         eth_header = packet[:eth_length]
         eth = unpack('!6s6sH', eth_header)
         eth_protocol = socket.ntohs(eth[2])
-        print('Destination MAC : ' +
-              eth_addr(packet[0:6]) + ' Source MAC : ' +
-              eth_addr(packet[6:12]) + ' Protocol : ' +
-              str(eth_protocol))
-
-        add_packet(eth_addr(packet[0:6]), eth_addr(packet[6:12]), str(eth_protocol))
 
         #Parse IP packets, IP Protocol number = 8
         if eth_protocol == 8:
@@ -58,14 +52,6 @@ def start_capture():
             s_addr = socket.inet_ntoa(iph[8])
             d_addr = socket.inet_ntoa(iph[9])
 
-            print('Version : ' +
-                  str(version) + ' IP Header Length : ' +
-                  str(ihl) + ' TTL : ' +
-                  str(ttl) + ' Protocol : ' +
-                  str(protocol) + ' Source Address : ' +
-                  str(s_addr) + ' Destination Address : ' +
-                  str(d_addr))
-
             #TCP protocol
             if protocol == 6 :
                 t = iph_length + eth_length
@@ -81,20 +67,16 @@ def start_capture():
                 doff_reserved = tcph[4]
                 tcph_length = doff_reserved >> 4
 
-                print('Source Port : ' +
-                      str(source_port) + ' Dest Port : ' +
-                      str(dest_port) + ' Sequence Number : ' +
-                      str(sequence) + ' Acknowledgement : ' +
-                      str(acknowledgement) + ' TCP header length : ' +
-                      str(tcph_length))
-
                 h_size = eth_length + iph_length + tcph_length * 4
                 data_size = len(packet) - h_size
 
                 #get data from the packet
                 data = packet[h_size:]
 
-                print('Data : ' + data)
+                #Save to sqlite
+                add_tcp_packet('tcp', eth_addr(packet[6:12]), eth_addr(packet[0:6]), str(eth_protocol), 'ipv' + str(version),
+                           str(ihl), str(ttl), str(s_addr), str(d_addr), str(source_port), str(dest_port),
+                           str(sequence), str(acknowledgement), str(tcph_length))
 
             #ICMP Packets
             elif protocol == 1:
@@ -109,18 +91,15 @@ def start_capture():
                 code = icmph[1]
                 checksum = icmph[2]
 
-                print('Type : ' +
-                      str(icmp_type) + ' Code : ' +
-                      str(code) + ' Checksum : ' +
-                      str(checksum))
-
                 h_size = eth_length + iph_length + icmph_length
                 data_size = len(packet) - h_size
 
                 #get data from the packet
                 data = packet[h_size:]
 
-                print('Data : ' + data)
+                #Save to sqlite
+                add_icmp_packet('icmp', eth_addr(packet[6:12]), eth_addr(packet[0:6]), str(eth_protocol), 'ipv' + str(version),
+                           str(ihl), str(ttl), str(s_addr), str(d_addr), str(icmp_type), str(code), str(checksum))
 
             #UDP packets
             elif protocol == 17:
@@ -136,19 +115,16 @@ def start_capture():
                 length = udph[2]
                 checksum = udph[3]
 
-                print('Source Port : ' +
-                      str(source_port) + ' Dest Port : ' +
-                      str(dest_port) + ' Length : ' +
-                      str(length) + ' Checksum : ' +
-                      str(checksum))
-
                 h_size = eth_length + iph_length + udph_length
                 data_size = len(packet) - h_size
 
                 #get data from the packet
                 data = packet[h_size:]
 
-                print('Data : ' + data)
+                #Save to sqlite
+                add_udp_packet('udp', eth_addr(packet[6:12]), eth_addr(packet[0:6]), str(eth_protocol), 'ipv' + str(version),
+                           str(ihl), str(ttl), str(s_addr), str(d_addr), str(source_port), str(dest_port), str(length),
+                           str(checksum))
 
             #some other IP packet like IGMP
             else:
