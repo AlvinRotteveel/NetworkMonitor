@@ -54,10 +54,20 @@ def live(stdscr):
     stdscr.clear()
     stdscr.border()
 
-    p = get_last_packet()
-    addstr(stdscr, 22, 5, str(p[0]))
-    addstr(stdscr, 22, 15, str(p[1]))
-    addstr(stdscr, 22, 22, str(p[2]))
+    lineh = 22
+
+    data = get_last_packet('10')
+    for l in data:
+        addstr(stdscr, lineh, 5, str(l[0]))
+        addstr(stdscr, lineh, 15, str(l[1]).upper())
+        addstr(stdscr, lineh, 22, str(l[2]))
+        addstr(stdscr, lineh, 42, str(l[3]))
+        addstr(stdscr, lineh, 62, str(l[4]).upper())
+        addstr(stdscr, lineh, 72, str(l[5]))
+        addstr(stdscr, lineh, 82, str(l[6]))
+        addstr(stdscr, lineh, 92, str(l[7]))
+        lineh += 1
+
     draw_columns(stdscr)
 
     if not sniffer.isAlive():
@@ -198,16 +208,19 @@ def draw_logo(stdscr):
 
 
 def draw_columns(stdscr):
-    line = '-' * (WIDTH - 10)
+    line = '=' * (WIDTH - 10)
+    addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
+    centered(stdscr, 3, line)
     centered(stdscr, 21, line)
 
     addstr(stdscr, 20, 5, "Packet#")
     addstr(stdscr, 20, 15, "Type")
     addstr(stdscr, 20, 22, "From")
-    addstr(stdscr, 20, 40, "To")
-    addstr(stdscr, 20, 48, "Protocol")
-    addstr(stdscr, 20, 60, "Version")
-    addstr(stdscr, 21, 10, "")
+    addstr(stdscr, 20, 42, "To")
+    addstr(stdscr, 20, 62, "Version")
+    addstr(stdscr, 20, 72, "S. Port")
+    addstr(stdscr, 20, 82, "D. Port")
+    addstr(stdscr, 20, 92, "TTL")
 
 def addstr(win, y, x, s, *args):
     # Bounds checking

@@ -56,8 +56,9 @@ def add_udp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcpr
               (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, len, chksm))
 
 
-def get_last_packet():
+def get_last_packet(amount):
     with datab:
-        c.execute('''SELECT * FROM (SELECT ID, TYPE, SRCMAC FROM PACKETS ORDER BY ID DESC LIMIT 1) ORDER BY ID''')
-        data = c.fetchone()
+        c.execute('''SELECT * FROM (SELECT ID, TYPE, SRCADR, DSTADR, VERSION, SRCPRT, DSTPRT, TTL FROM PACKETS ORDER BY ID DESC LIMIT 13)
+        ORDER BY ID''')
+        data = c.fetchall()
         return data
