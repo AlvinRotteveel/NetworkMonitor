@@ -7,6 +7,7 @@ from curses.ascii import (isalnum,
                           SP,
                           TAB)
 from agent.capture import SocketCapture
+import time
 
 
 sniffer = SocketCapture()
@@ -67,8 +68,32 @@ def agent(stdscr):
     stdscr.clear()
     stdscr.border()
 
-    centered(stdscr, 5, "Current status of the network capture agent")
-    centered(stdscr, 18, "Off", curses.color_pair(5))
+    if sniffer.isAlive():
+        running = 2
+        centered(stdscr, 29, "Agent is running")
+        stdscr.refresh()
+    else:
+        running = 5
+        centered(stdscr, 29, "Agent has stopped")
+        stdscr.refresh()
+
+    centered(stdscr, 3, "Current status of the network capture agent")
+    centered(stdscr, 10, "                        .                        ", curses.color_pair(running))
+    centered(stdscr, 11, "                      @@@@#                      ", curses.color_pair(running))
+    centered(stdscr, 12, "              /@@,    @@@@&    /@@.              ", curses.color_pair(running))
+    centered(stdscr, 13, "            /@@@@(    @@@@&    &@@@@.            ", curses.color_pair(running))
+    centered(stdscr, 14, "           &@@@#      @@@@&      &@@@#           ", curses.color_pair(running))
+    centered(stdscr, 15, "          &@@@.       @@@@&       /@@@#          ", curses.color_pair(running))
+    centered(stdscr, 16, "         (@@@.        @@@@&        /@@@,         ", curses.color_pair(running))
+    centered(stdscr, 17, "         @@@&         @@@@&         @@@%         ", curses.color_pair(running))
+    centered(stdscr, 18, "         @@@#         #@@@,         @@@&         ", curses.color_pair(running))
+    centered(stdscr, 19, "         @@@&                       @@@#         ", curses.color_pair(running))
+    centered(stdscr, 20, "         /@@@,                     #@@@.         ", curses.color_pair(running))
+    centered(stdscr, 21, "          %@@@*                   #@@@/          ", curses.color_pair(running))
+    centered(stdscr, 22, "           %@@@&                .@@@@/           ", curses.color_pair(running))
+    centered(stdscr, 23, "            .@@@@@/           #@@@@@             ", curses.color_pair(running))
+    centered(stdscr, 24, "              .@@@@@@@@@@@@@@@@@@&               ", curses.color_pair(running))
+    centered(stdscr, 25, "                 .#@@@@@@@@@@@/                  ", curses.color_pair(running))
     centered(stdscr, 34, "Press (S) to start the agent, or (K) to kill it, home (H)")
     stdscr.refresh()
 
@@ -77,9 +102,12 @@ def agent(stdscr):
             if ev == ord("s"):
                 sniffer.__init__()
                 sniffer.start()
-                agent_on(stdscr)
+                agent(stdscr)
             elif ev == ord("k"):
                 sniffer.cancel()
+                centered(stdscr, 29, "      Quiting....      ")
+                stdscr.refresh()
+                time.sleep(1)
                 agent(stdscr)
             elif ev == ord("h"):
                 return home(stdscr)
@@ -121,16 +149,6 @@ def bunny(stdscr):
                 set_dimensions(stdscr)
             elif ev == ord("h"):
                 return home(stdscr)
-
-
-def agent_on(stdscr):
-    stdscr.clear()
-    stdscr.border()
-
-    centered(stdscr, 5, "Current status of the network capture agent")
-    centered(stdscr, 18, "On", curses.color_pair(2))
-    centered(stdscr, 34, "Press (S) to start the agent, or (K) to kill it, home (H)")
-    stdscr.refresh()
 
 
 def set_dimensions(screen):
