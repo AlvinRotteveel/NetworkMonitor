@@ -81,12 +81,18 @@ def live(stdscr):
 def history(stdscr):
     stdscr.clear()
     stdscr.border()
-
+    line = '=' * (WIDTH - 10)
+    addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
+    addstr(stdscr, 2, WIDTH - 28, "Network Traffic History", curses.color_pair(2))
+    centered(stdscr, 3, line)
 
 def connect(stdscr):
     stdscr.clear()
     stdscr.border()
-
+    line = '=' * (WIDTH - 10)
+    addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
+    addstr(stdscr, 2, WIDTH - 21, "Connect to Agent", curses.color_pair(2))
+    centered(stdscr, 3, line)
 
 def agent(stdscr):
     stdscr.clear()
@@ -210,6 +216,7 @@ def draw_logo(stdscr):
 def draw_columns(stdscr):
     line = '=' * (WIDTH - 10)
     addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
+    addstr(stdscr, 2, WIDTH - 25, "Live Network Traffic", curses.color_pair(2))
     centered(stdscr, 3, line)
     centered(stdscr, 21, line)
 
