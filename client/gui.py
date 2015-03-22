@@ -8,6 +8,7 @@ from curses.ascii import (isalnum,
                           TAB)
 from agent.capture import SocketCapture
 import time
+from agent.database import get_last_packet
 
 
 sniffer = SocketCapture()
@@ -53,6 +54,19 @@ def live(stdscr):
     stdscr.clear()
     stdscr.border()
 
+    p = get_last_packet()
+    addstr(stdscr, 22, 5, str(p[0]))
+    addstr(stdscr, 22, 15, str(p[1]))
+    addstr(stdscr, 22, 22, str(p[2]))
+    draw_columns(stdscr)
+
+    if not sniffer.isAlive():
+        stdscr.clear()
+        centered(stdscr, HEIGHT // 2, "Sniffing agent is not running, start the agent first. Home (H)")
+        stdscr.refresh()
+
+    return act_on_input(stdscr, {ESC: quit,
+                                 "h": home})
 
 def history(stdscr):
     stdscr.clear()
@@ -78,7 +92,7 @@ def agent(stdscr):
         stdscr.refresh()
 
     centered(stdscr, 3, "Current status of the network capture agent")
-    centered(stdscr, 10, "                        .                        ", curses.color_pair(running))
+    centered(stdscr, 10, "                       ,@,                        ", curses.color_pair(running))
     centered(stdscr, 11, "                      @@@@#                      ", curses.color_pair(running))
     centered(stdscr, 12, "              /@@,    @@@@&    /@@.              ", curses.color_pair(running))
     centered(stdscr, 13, "            /@@@@(    @@@@&    &@@@@.            ", curses.color_pair(running))
@@ -182,6 +196,18 @@ def draw_logo(stdscr):
     addstr(stdscr, 21, x, "           ,@@@@@                                                                                  ",curses.color_pair(2))
     addstr(stdscr, 22, x, "             &@/                                                                                   ",curses.color_pair(2))
 
+
+def draw_columns(stdscr):
+    line = '-' * (WIDTH - 10)
+    centered(stdscr, 21, line)
+
+    addstr(stdscr, 20, 5, "Packet#")
+    addstr(stdscr, 20, 15, "Type")
+    addstr(stdscr, 20, 22, "From")
+    addstr(stdscr, 20, 40, "To")
+    addstr(stdscr, 20, 48, "Protocol")
+    addstr(stdscr, 20, 60, "Version")
+    addstr(stdscr, 21, 10, "")
 
 def addstr(win, y, x, s, *args):
     # Bounds checking
