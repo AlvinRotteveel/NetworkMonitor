@@ -53,16 +53,19 @@ def home(stdscr):
 def live(stdscr):
     stdscr.clear()
     stdscr.border()
+    stdscr.nodelay(True)
 
     if not sniffer.isAlive():
         stdscr.clear()
-        centered(stdscr, HEIGHT // 2, "Sniffing agent is not running, start the agent first. Home (H)")
+        stdscr.border()
+        centered(stdscr, HEIGHT // 2, "Sniffing agent is not running, start the agent first, or connect to agent. Home (H)")
         stdscr.refresh()
+        return act_on_input(stdscr, {ESC: quit,
+                                     "h": home})
     else:
         lineh = 22
         draw_columns(stdscr)
         data = get_last_packet('13')
-        # previousp = None
 
         for l in data:
             addstr(stdscr, lineh, 5, str(l[0]))
@@ -76,29 +79,15 @@ def live(stdscr):
             lineh += 1
             stdscr.refresh()
 
-        # Nasty way of refreshing the view.....
         while True:
-            time.sleep(1)
-            live(stdscr)
-
-            return act_on_input(stdscr, {ESC: quit,
-                                         "h": home})
-
-            # if previousp != data[12][0]:
-            #     for l in data:
-            #         addstr(stdscr, lineh, 5, str(l[0]))
-            #         addstr(stdscr, lineh, 15, str(l[1]).upper())
-            #         addstr(stdscr, lineh, 22, str(l[2]))
-            #         addstr(stdscr, lineh, 42, str(l[3]))
-            #         addstr(stdscr, lineh, 62, str(l[4]).upper())
-            #         addstr(stdscr, lineh, 72, str(l[5]))
-            #         addstr(stdscr, lineh, 82, str(l[6]))
-            #         addstr(stdscr, lineh, 92, str(l[7]))
-            #         lineh += 1
-            #         stdscr.refresh()
-            # time.sleep(1)
-            # data = get_last_packet('13')
-            # previousp = data[12][0]
+            ev = stdscr.getch()
+            if ev == ord("h"):
+                break
+            # Not the neatest way.....
+            else:
+                time.sleep(1)
+                stdscr.clear()
+                live(stdscr)
 
 
 def history(stdscr):
@@ -109,13 +98,32 @@ def history(stdscr):
     addstr(stdscr, 2, WIDTH - 28, "Network Traffic History", curses.color_pair(2))
     centered(stdscr, 3, line)
 
-def connect(stdscr):
+    if not sniffer.isAlive():
+        stdscr.clear()
+        stdscr.border()
+        centered(stdscr, HEIGHT // 2, "Sniffing agent is not running, start the agent first, or connect to agent. Home (H)")
+        stdscr.refresh()
+        return act_on_input(stdscr, {ESC: quit,
+                                     "h": home})
+
+def connect(stdscr, input=""):
     stdscr.clear()
     stdscr.border()
     line = '=' * (WIDTH - 10)
     addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
     addstr(stdscr, 2, WIDTH - 21, "Connect to Agent", curses.color_pair(2))
     centered(stdscr, 3, line)
+
+    centered(stdscr, (HEIGHT // 2) - 2, "Enter the IP address of the agent:")
+    addstr(stdscr, (HEIGHT // 2), (WIDTH // 2) - 17, "_" * 34, curses.A_DIM)
+    addstr(stdscr, (HEIGHT // 2), (WIDTH // 2) - 17, input[:34])
+    curses.curs_set(2)
+
+    stdscr.refresh()
+    stdscr.nodelay(True)
+
+    while True:
+        time.sleep(1)
 
 def agent(stdscr):
     stdscr.clear()

@@ -2,7 +2,7 @@ from threading import Thread
 import socket
 import sys
 from struct import *
-from database import add_tcp_packet, add_icmp_packet, add_udp_packet
+from agent.database import add_tcp_packet, add_icmp_packet, add_udp_packet
 
 
 class SocketCapture(Thread):
@@ -13,9 +13,8 @@ class SocketCapture(Thread):
         self.cancelled = False
         try:
             self.s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0003))
-        except socket.error as msg:
-            print('Socket could not be created')
-            sys.exit()
+        except:
+            pass
 
     # receive a packet
     def run(self):
