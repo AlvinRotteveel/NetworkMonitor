@@ -53,7 +53,6 @@ def home(stdscr):
 def live(stdscr):
     stdscr.clear()
     stdscr.border()
-    stdscr.nodelay(True)
 
     if not sniffer.isAlive():
         stdscr.clear()
@@ -63,31 +62,18 @@ def live(stdscr):
         return act_on_input(stdscr, {ESC: quit,
                                      "h": home})
     else:
-        lineh = 22
         draw_columns(stdscr)
-        data = get_last_packet('13')
-
-        for l in data:
-            addstr(stdscr, lineh, 5, str(l[0]))
-            addstr(stdscr, lineh, 15, str(l[1]).upper())
-            addstr(stdscr, lineh, 22, str(l[2]))
-            addstr(stdscr, lineh, 42, str(l[3]))
-            addstr(stdscr, lineh, 62, str(l[4]).upper())
-            addstr(stdscr, lineh, 72, str(l[5]))
-            addstr(stdscr, lineh, 82, str(l[6]))
-            addstr(stdscr, lineh, 92, str(l[7]))
-            lineh += 1
-            stdscr.refresh()
-
+        draw_packets(stdscr)
         while True:
             ev = stdscr.getch()
             if ev == ord("h"):
-                break
+                stdscr.nodelay(False)
+                return home(stdscr)
             # Not the neatest way.....
             else:
-                time.sleep(1)
+                time.sleep(0.1)
                 stdscr.clear()
-                live(stdscr)
+                draw_packets(stdscr)
 
 
 def history(stdscr):
@@ -123,7 +109,7 @@ def connect(stdscr, input=""):
     stdscr.nodelay(True)
 
     while True:
-        time.sleep(1)
+        time.sleep(0.01)
 
 def agent(stdscr):
     stdscr.clear()
@@ -259,6 +245,26 @@ def draw_columns(stdscr):
     addstr(stdscr, 20, 72, "S. Port")
     addstr(stdscr, 20, 82, "D. Port")
     addstr(stdscr, 20, 92, "TTL")
+
+
+def draw_packets(stdscr):
+    lineh = 22
+    draw_columns(stdscr)
+    data = get_last_packet('13')
+    stdscr.nodelay(True)
+
+    for l in data:
+        addstr(stdscr, lineh, 5, str(l[0]))
+        addstr(stdscr, lineh, 15, str(l[1]).upper())
+        addstr(stdscr, lineh, 22, str(l[2]))
+        addstr(stdscr, lineh, 42, str(l[3]))
+        addstr(stdscr, lineh, 62, str(l[4]).upper())
+        addstr(stdscr, lineh, 72, str(l[5]))
+        addstr(stdscr, lineh, 82, str(l[6]))
+        addstr(stdscr, lineh, 92, str(l[7]))
+        lineh += 1
+        stdscr.refresh()
+
 
 def addstr(win, y, x, s, *args):
     # Bounds checking
