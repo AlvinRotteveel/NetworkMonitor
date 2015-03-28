@@ -81,6 +81,8 @@ def live(stdscr):
             time.sleep(1)
             live(stdscr)
 
+            return act_on_input(stdscr, {ESC: quit,
+                                         "h": home})
 
             # if previousp != data[12][0]:
             #     for l in data:
@@ -98,9 +100,6 @@ def live(stdscr):
             # data = get_last_packet('13')
             # previousp = data[12][0]
 
-
-    return act_on_input(stdscr, {ESC: quit,
-                                 "h": home})
 
 def history(stdscr):
     stdscr.clear()
