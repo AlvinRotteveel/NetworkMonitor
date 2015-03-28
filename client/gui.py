@@ -54,26 +54,50 @@ def live(stdscr):
     stdscr.clear()
     stdscr.border()
 
-    lineh = 22
-
-    data = get_last_packet('10')
-    for l in data:
-        addstr(stdscr, lineh, 5, str(l[0]))
-        addstr(stdscr, lineh, 15, str(l[1]).upper())
-        addstr(stdscr, lineh, 22, str(l[2]))
-        addstr(stdscr, lineh, 42, str(l[3]))
-        addstr(stdscr, lineh, 62, str(l[4]).upper())
-        addstr(stdscr, lineh, 72, str(l[5]))
-        addstr(stdscr, lineh, 82, str(l[6]))
-        addstr(stdscr, lineh, 92, str(l[7]))
-        lineh += 1
-
-    draw_columns(stdscr)
-
     if not sniffer.isAlive():
         stdscr.clear()
         centered(stdscr, HEIGHT // 2, "Sniffing agent is not running, start the agent first. Home (H)")
         stdscr.refresh()
+    else:
+        lineh = 22
+        draw_columns(stdscr)
+        data = get_last_packet('13')
+        # previousp = None
+
+        for l in data:
+            addstr(stdscr, lineh, 5, str(l[0]))
+            addstr(stdscr, lineh, 15, str(l[1]).upper())
+            addstr(stdscr, lineh, 22, str(l[2]))
+            addstr(stdscr, lineh, 42, str(l[3]))
+            addstr(stdscr, lineh, 62, str(l[4]).upper())
+            addstr(stdscr, lineh, 72, str(l[5]))
+            addstr(stdscr, lineh, 82, str(l[6]))
+            addstr(stdscr, lineh, 92, str(l[7]))
+            lineh += 1
+            stdscr.refresh()
+
+        # Nasty way of refreshing the view.....
+        while True:
+            time.sleep(1)
+            live(stdscr)
+
+
+            # if previousp != data[12][0]:
+            #     for l in data:
+            #         addstr(stdscr, lineh, 5, str(l[0]))
+            #         addstr(stdscr, lineh, 15, str(l[1]).upper())
+            #         addstr(stdscr, lineh, 22, str(l[2]))
+            #         addstr(stdscr, lineh, 42, str(l[3]))
+            #         addstr(stdscr, lineh, 62, str(l[4]).upper())
+            #         addstr(stdscr, lineh, 72, str(l[5]))
+            #         addstr(stdscr, lineh, 82, str(l[6]))
+            #         addstr(stdscr, lineh, 92, str(l[7]))
+            #         lineh += 1
+            #         stdscr.refresh()
+            # time.sleep(1)
+            # data = get_last_packet('13')
+            # previousp = data[12][0]
+
 
     return act_on_input(stdscr, {ESC: quit,
                                  "h": home})
