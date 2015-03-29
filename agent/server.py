@@ -11,7 +11,10 @@ def threaded(fn):
 class ServerHandler(socketserver.BaseRequestHandler):
     def handle(self):
         data = self.request.recv(1024)
-        self.request.send(data)
+        decoded_data = bytes.decode(data)
+        if decoded_data == "init":
+            status = "active"
+            self.request.send(status.encode('utf-8'))
         return
 
 

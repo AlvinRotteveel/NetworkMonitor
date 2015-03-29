@@ -10,6 +10,7 @@ from agent.capture import SocketCapture
 import time
 from agent.database import get_last_packet
 from agent.server import Server
+from client.client import Client
 
 
 sniffer = SocketCapture()
@@ -47,7 +48,7 @@ def home(stdscr):
     return act_on_input(stdscr, {ESC: quit,
                                  "1": live,
                                  "2": history,
-                                 "3": connect,
+                                 "3": client,
                                  "4": agent,
                                  "5": bunny})
 
@@ -92,36 +93,23 @@ def history(stdscr):
         return act_on_input(stdscr, {ESC: home})
 
 
-# def connect(stdscr):
-#     stdscr.clear()
-#     draw_menu(stdscr, "Connect to agent")
-#     stdscr.nodelay(True)
-#     addinput(stdscr, (HEIGHT // 2) - 2, (WIDTH // 2) - 17, "Enter the IP address of the agent:")
-#     curses.curs_set(2)
-#     stdscr.refresh()
-#
-#     while True:
-#         time.sleep(0.01)
-
-def connect(stdscr, input=""):
+def client(stdscr, input=""):
     prev_input = ""
-    autocomplete_results = []
-    kill_switch = None
     redraw = None
     selected_result = None
 
     stdscr.clear()
     draw_menu(stdscr, "Connect to agent")
     centered(stdscr, HEIGHT // 2, "Fill in the IP of the agent/server:")
-    addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 30, "_" * 60, curses.A_DIM)
-    addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 30, input[:60])
+    addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 8, "_" * 15, curses.A_DIM)
+    addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 8, input[:15])
     curses.curs_set(2)
     stdscr.refresh()
 
     stdscr.nodelay(True)
 
     while True:
-        if input != prev_input or (redraw and (redraw == True or redraw.is_set())):
+        if input != prev_input or (redraw and (redraw is True or redraw.is_set())):
             if input != prev_input:
                 prev_input = input
             else:
@@ -131,9 +119,9 @@ def connect(stdscr, input=""):
             draw_menu(stdscr, "Connect to agent")
             centered(stdscr, HEIGHT // 2, "Fill in the IP of the agent/server:")
 
-            addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 30, "_" * 60, curses.A_DIM)
+            addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 8, "_" * 15, curses.A_DIM)
             query = input
-            addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 30, query[:60])
+            addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 8, query[:15])
 
             stdscr.refresh()
 
@@ -156,12 +144,25 @@ def connect(stdscr, input=""):
         elif ev == ord("\n"):
             stdscr.nodelay(False)
             curses.curs_set(0)
-            return search_results(stdscr, query)
+            return connect(stdscr, query)
         elif isalnum(ev) or ev in (ord(","), ord("."), ord("-")):
             selected_result = None
             input += chr(ev)
 
         time.sleep(0.01)
+
+
+def connect(stdscr, query):
+    connection = Client(query)
+    result = connection.init()
+
+    while True:
+        if result == "active":
+            stdscr.clear()
+            draw_menu(stdscr, "Connect to agent")
+            addstr(stdscr, HEIGHT // 2, (WIDTH // 2) - 20, "Client connection active to: " + query)
+            addstr(stdscr, HEIGHT // 2 + 2, (WIDTH // 2) - 23, "Go back to the home menu (ESC) to gather data")
+            stdscr.refresh()
 
 
 def agent(stdscr):
@@ -317,7 +318,7 @@ def draw_packets(stdscr):
 
 def draw_menu(stdscr, s):
     line = '=' * (WIDTH - 10)
-    addstr(stdscr, 2, 5, "(ESC) Quit")
+    addstr(stdscr, 2, 5, "(ESC) Home")
     addstr(stdscr, 2, WIDTH - len(s) - 5, s, curses.color_pair(2))
     centered(stdscr, 3, line)
     stdscr.border()
