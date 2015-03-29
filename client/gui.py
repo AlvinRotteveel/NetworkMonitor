@@ -52,18 +52,19 @@ def home(stdscr):
 
 def live(stdscr):
     stdscr.clear()
-    stdscr.border()
 
     if not sniffer.isAlive():
         stdscr.clear()
-        stdscr.border()
-        centered(stdscr, HEIGHT // 2, "Sniffing agent is not running, start the agent first, or connect to agent. Home (H)")
+        draw_menu(stdscr, "Live Network Traffic")
+        centered(stdscr, HEIGHT // 2,
+                 "Sniffing agent is not running, start the agent first, or connect to agent. Home (H)")
         stdscr.refresh()
         return act_on_input(stdscr, {ESC: quit,
                                      "h": home})
     else:
         draw_columns(stdscr)
         draw_packets(stdscr)
+        draw_menu(stdscr, "Live Network Traffic")
         while True:
             ev = stdscr.getch()
             if ev == ord("h"):
@@ -74,42 +75,58 @@ def live(stdscr):
                 time.sleep(0.1)
                 stdscr.clear()
                 draw_packets(stdscr)
+                draw_menu(stdscr, "Live Network Traffic")
 
 
 def history(stdscr):
     stdscr.clear()
-    stdscr.border()
-    line = '=' * (WIDTH - 10)
-    addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
-    addstr(stdscr, 2, WIDTH - 28, "Network Traffic History", curses.color_pair(2))
-    centered(stdscr, 3, line)
+    draw_menu(stdscr, "Network Traffic History")
 
     if not sniffer.isAlive():
         stdscr.clear()
-        stdscr.border()
-        centered(stdscr, HEIGHT // 2, "Sniffing agent is not running, start the agent first, or connect to agent. Home (H)")
+        draw_menu(stdscr, "Network Traffic History")
+        centered(stdscr, HEIGHT // 2,
+                 "Sniffing agent is not running, start the agent first, or connect to agent. Home (H)")
         stdscr.refresh()
         return act_on_input(stdscr, {ESC: quit,
                                      "h": home})
 
-def connect(stdscr, input=""):
+
+def connect(stdscr):
     stdscr.clear()
-    stdscr.border()
-    line = '=' * (WIDTH - 10)
-    addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
-    addstr(stdscr, 2, WIDTH - 21, "Connect to Agent", curses.color_pair(2))
-    centered(stdscr, 3, line)
+    draw_menu(stdscr, "Connect to agent")
 
-    centered(stdscr, (HEIGHT // 2) - 2, "Enter the IP address of the agent:")
-    addstr(stdscr, (HEIGHT // 2), (WIDTH // 2) - 17, "_" * 34, curses.A_DIM)
-    addstr(stdscr, (HEIGHT // 2), (WIDTH // 2) - 17, input[:34])
-    curses.curs_set(2)
-
-    stdscr.refresh()
     stdscr.nodelay(True)
 
+    addinput(stdscr, (HEIGHT // 2) - 2, (WIDTH // 2) - 17, "Enter the IP address of the agent:")
+    curses.curs_set(2)
+    stdscr.refresh()
     while True:
         time.sleep(0.01)
+
+    # while True:
+    #     ev = stdscr.getch()
+    #     if ev == SP:
+    #         selected_result = None
+    #         input += " "
+    #     elif ev == curses.KEY_RESIZE:
+    #         set_dimensions(stdscr)
+    #     elif ev in (BS, DEL, curses.KEY_BACKSPACE):
+    #         if selected_result:
+    #             redraw = True
+    #             selected_result = None
+    #         else:
+    #             input = input[:-1]
+    #     elif ev == "h":
+    #         stdscr.nodelay(False)
+    #         curses.curs_set(0)
+    #         return home(stdscr)
+    #     elif isalnum(ev) or ev in (ord(","), ord("."), ord("-")):
+    #         selected_result = None
+    #         input += chr(ev)
+    #
+    #     time.sleep(0.01)
+
 
 def agent(stdscr):
     stdscr.clear()
@@ -231,12 +248,7 @@ def draw_logo(stdscr):
 
 
 def draw_columns(stdscr):
-    line = '=' * (WIDTH - 10)
-    addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
-    addstr(stdscr, 2, WIDTH - 25, "Live Network Traffic", curses.color_pair(2))
-    centered(stdscr, 3, line)
-    centered(stdscr, 21, line)
-
+    addstr(stdscr, 21, 5, '=' * (WIDTH - 10))
     addstr(stdscr, 20, 5, "Packet#")
     addstr(stdscr, 20, 15, "Type")
     addstr(stdscr, 20, 22, "From")
@@ -266,6 +278,14 @@ def draw_packets(stdscr):
         stdscr.refresh()
 
 
+def draw_menu(stdscr, s):
+    line = '=' * (WIDTH - 10)
+    addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
+    addstr(stdscr, 2, WIDTH - len(s) - 5, s, curses.color_pair(2))
+    centered(stdscr, 3, line)
+    stdscr.border()
+
+
 def addstr(win, y, x, s, *args):
     # Bounds checking
     y = max(0, y)
@@ -277,6 +297,16 @@ def addstr(win, y, x, s, *args):
     s = s[:WIDTH - x - 1]
 
     return win.addstr(y, x, s, *args)
+
+
+def addinput(stdscr, y, x, s):
+    curses.echo()
+    stdscr.addstr(y, x, s)
+    stdscr.refresh()
+    input = stdscr.getstr(y + 1, x, 20)
+    addstr(stdscr, (HEIGHT // 2), (WIDTH // 2) - 17, "_" * 34, curses.A_DIM)
+    addstr(stdscr, (HEIGHT // 2), (WIDTH // 2) - 17, input[:34])
+    return input
 
 
 def centered(win, y, message, *args):
