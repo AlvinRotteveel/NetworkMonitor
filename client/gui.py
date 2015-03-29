@@ -9,9 +9,11 @@ from curses.ascii import (isalnum,
 from agent.capture import SocketCapture
 import time
 from agent.database import get_last_packet
+from agent.server import Server
 
 
 sniffer = SocketCapture()
+server = Server(('0.0.0.0', 65535))
 
 
 def view(stdscr):
@@ -37,7 +39,7 @@ def home(stdscr):
     centered(stdscr, 28, "[1] Live network traffic                  ")
     centered(stdscr, 29, "[2] Network traffic history               ")
     centered(stdscr, 30, "[3] Connect to agent                      ")
-    centered(stdscr, 31, "[4] Run agent                             ")
+    centered(stdscr, 31, "[4] Run agent/server                      ")
     centered(stdscr, 32, "[5] Bunny!                                ")
     centered(stdscr, 34, "[ESC] Quit                                ")
     stdscr.refresh()
@@ -59,15 +61,14 @@ def live(stdscr):
         centered(stdscr, HEIGHT // 2,
                  "Sniffing agent is not running, start the agent first, or connect to agent. Home (H)")
         stdscr.refresh()
-        return act_on_input(stdscr, {ESC: quit,
-                                     "h": home})
+        return act_on_input(stdscr, {ESC: home})
     else:
         draw_columns(stdscr)
         draw_packets(stdscr)
         draw_menu(stdscr, "Live Network Traffic")
         while True:
             ev = stdscr.getch()
-            if ev == ord("h"):
+            if ev == ESC:
                 stdscr.nodelay(False)
                 return home(stdscr)
             # Not the neatest way.....
@@ -88,44 +89,79 @@ def history(stdscr):
         centered(stdscr, HEIGHT // 2,
                  "Sniffing agent is not running, start the agent first, or connect to agent. Home (H)")
         stdscr.refresh()
-        return act_on_input(stdscr, {ESC: quit,
-                                     "h": home})
+        return act_on_input(stdscr, {ESC: home})
 
 
-def connect(stdscr):
+# def connect(stdscr):
+#     stdscr.clear()
+#     draw_menu(stdscr, "Connect to agent")
+#     stdscr.nodelay(True)
+#     addinput(stdscr, (HEIGHT // 2) - 2, (WIDTH // 2) - 17, "Enter the IP address of the agent:")
+#     curses.curs_set(2)
+#     stdscr.refresh()
+#
+#     while True:
+#         time.sleep(0.01)
+
+def connect(stdscr, input=""):
+    prev_input = ""
+    autocomplete_results = []
+    kill_switch = None
+    redraw = None
+    selected_result = None
+
     stdscr.clear()
     draw_menu(stdscr, "Connect to agent")
+    centered(stdscr, HEIGHT // 2, "Fill in the IP of the agent/server:")
+    addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 30, "_" * 60, curses.A_DIM)
+    addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 30, input[:60])
+    curses.curs_set(2)
+    stdscr.refresh()
 
     stdscr.nodelay(True)
 
-    addinput(stdscr, (HEIGHT // 2) - 2, (WIDTH // 2) - 17, "Enter the IP address of the agent:")
-    curses.curs_set(2)
-    stdscr.refresh()
     while True:
-        time.sleep(0.01)
+        if input != prev_input or (redraw and (redraw == True or redraw.is_set())):
+            if input != prev_input:
+                prev_input = input
+            else:
+                redraw = None
 
-    # while True:
-    #     ev = stdscr.getch()
-    #     if ev == SP:
-    #         selected_result = None
-    #         input += " "
-    #     elif ev == curses.KEY_RESIZE:
-    #         set_dimensions(stdscr)
-    #     elif ev in (BS, DEL, curses.KEY_BACKSPACE):
-    #         if selected_result:
-    #             redraw = True
-    #             selected_result = None
-    #         else:
-    #             input = input[:-1]
-    #     elif ev == "h":
-    #         stdscr.nodelay(False)
-    #         curses.curs_set(0)
-    #         return home(stdscr)
-    #     elif isalnum(ev) or ev in (ord(","), ord("."), ord("-")):
-    #         selected_result = None
-    #         input += chr(ev)
-    #
-    #     time.sleep(0.01)
+            stdscr.clear()
+            draw_menu(stdscr, "Connect to agent")
+            centered(stdscr, HEIGHT // 2, "Fill in the IP of the agent/server:")
+
+            addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 30, "_" * 60, curses.A_DIM)
+            query = input
+            addstr(stdscr, HEIGHT // 2 + 2, WIDTH // 2 - 30, query[:60])
+
+            stdscr.refresh()
+
+        ev = stdscr.getch()
+        if ev == SP:
+            selected_result = None
+            input += " "
+        elif ev == curses.KEY_RESIZE:
+            set_dimensions(stdscr)
+        elif ev in (BS, DEL, curses.KEY_BACKSPACE):
+            if selected_result:
+                redraw = True
+                selected_result = None
+            else:
+                input = input[:-1]
+        elif ev == ESC:
+            stdscr.nodelay(False)
+            curses.curs_set(0)
+            return home(stdscr)
+        elif ev == ord("\n"):
+            stdscr.nodelay(False)
+            curses.curs_set(0)
+            return search_results(stdscr, query)
+        elif isalnum(ev) or ev in (ord(","), ord("."), ord("-")):
+            selected_result = None
+            input += chr(ev)
+
+        time.sleep(0.01)
 
 
 def agent(stdscr):
@@ -134,11 +170,11 @@ def agent(stdscr):
 
     if sniffer.isAlive():
         running = 2
-        centered(stdscr, 29, "Agent is running")
+        centered(stdscr, 29, "Agent and server running")
         stdscr.refresh()
     else:
         running = 5
-        centered(stdscr, 29, "Agent has stopped")
+        centered(stdscr, 29, "Agent and server stopped")
         stdscr.refresh()
 
     centered(stdscr, 3, "Current status of the network capture agent")
@@ -158,7 +194,7 @@ def agent(stdscr):
     centered(stdscr, 23, "            .@@@@@/           #@@@@@             ", curses.color_pair(running))
     centered(stdscr, 24, "              .@@@@@@@@@@@@@@@@@@&               ", curses.color_pair(running))
     centered(stdscr, 25, "                 .#@@@@@@@@@@@/                  ", curses.color_pair(running))
-    centered(stdscr, 34, "Press (S) to start the agent, or (K) to kill it, home (H)")
+    centered(stdscr, 34, "Press (S) to start the agent/server, or (K) to kill it, home (ESC)")
     stdscr.refresh()
 
     while True:
@@ -166,6 +202,7 @@ def agent(stdscr):
             if ev == ord("s"):
                 sniffer.__init__()
                 sniffer.start()
+                server.serve_forever()
                 agent(stdscr)
             elif ev == ord("k"):
                 sniffer.cancel()
@@ -173,7 +210,7 @@ def agent(stdscr):
                 stdscr.refresh()
                 time.sleep(1)
                 agent(stdscr)
-            elif ev == ord("h"):
+            elif ev == ESC:
                 return home(stdscr)
             elif ev == curses.KEY_RESIZE:
                 set_dimensions(stdscr)
@@ -201,7 +238,7 @@ def bunny(stdscr):
     centered(stdscr, 21, "+o0MMMoo000000000000000000NNMNo1^          ")
     centered(stdscr, 22, "      ^o000000000o000ooooo0000NM0          ")
     centered(stdscr, 24, "            Get back to work!              ")
-    centered(stdscr, 26, "            (H) home (Q) quit              ")
+    centered(stdscr, 26, "               (ESC) home                  ")
 
     stdscr.refresh()
 
@@ -211,7 +248,7 @@ def bunny(stdscr):
                 return quit
             elif ev == curses.KEY_RESIZE:
                 set_dimensions(stdscr)
-            elif ev == ord("h"):
+            elif ev == ESC:
                 return home(stdscr)
 
 
@@ -280,7 +317,7 @@ def draw_packets(stdscr):
 
 def draw_menu(stdscr, s):
     line = '=' * (WIDTH - 10)
-    addstr(stdscr, 2, 5, "(H) Home    (ESC) Quit")
+    addstr(stdscr, 2, 5, "(ESC) Quit")
     addstr(stdscr, 2, WIDTH - len(s) - 5, s, curses.color_pair(2))
     centered(stdscr, 3, line)
     stdscr.border()
