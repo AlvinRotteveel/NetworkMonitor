@@ -1,5 +1,10 @@
 import socket
-import sys
+import threading
+
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+    return wrapper
 
 
 class Client():
@@ -12,6 +17,7 @@ class Client():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return
 
+    @threaded
     def init(self):
         # Connect to server and send data
         self.sock.settimeout(5)
