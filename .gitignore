@@ -55,3 +55,4 @@ target/
 
 # Dump files
 agent/dump/
+*.db

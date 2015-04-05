@@ -1,5 +1,7 @@
 import socketserver
+import pickle
 import threading
+from agent.database import get_last_packet
 
 
 def threaded(fn):
@@ -7,14 +9,15 @@ def threaded(fn):
         threading.Thread(target=fn, args=args, kwargs=kwargs).start()
     return wrapper
 
-
 class ServerHandler(socketserver.BaseRequestHandler):
     def handle(self):
-        data = self.request.recv(1024)
+        data = self.request.recv(10240)
         decoded_data = bytes.decode(data)
         if decoded_data == "init":
-            status = "active"
-            self.request.send(status.encode('utf-8'))
+            self.request.send(decoded_data.encode('utf-8'))
+        elif decoded_data == "live":
+            data = get_last_packet('13')
+            self.request.send(pickle.dumps(data))
         return
 
 

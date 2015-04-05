@@ -34,31 +34,40 @@ datab.execute('''CREATE TABLE IF NOT EXISTS PACKETS
 
 def add_tcp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, seq, ack, tcphl):
     """Insert a channel in the database"""
-    write.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT,
-    DSTPRT, SEQUENCE, ACK, TCPHL)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
-              (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, seq, ack, tcphl))
-
+    try:
+        write.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT,
+        DSTPRT, SEQUENCE, ACK, TCPHL)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
+                  (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, seq, ack, tcphl))
+    except lite.OperationalError:
+            pass
 
 def add_icmp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, cmptyp, code, chksm):
     """Insert a channel in the database"""
-    write.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, ICMPTYPE,
-    CODE, CHCKSM)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)''',
-              (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, cmptyp, code, chksm))
-
+    try:
+        write.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, ICMPTYPE,
+        CODE, CHCKSM)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)''',
+                  (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, cmptyp, code, chksm))
+    except lite.OperationalError:
+            pass
 
 def add_udp_packet(type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, len, chksm):
     """Insert a channel in the database"""
-    write.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT,
-    DSTPRT, LENGTH, CHCKSM)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''',
-              (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, len, chksm))
-
+    try:
+        write.execute('''INSERT INTO PACKETS (TYPE, SRCMAC, DSTMAC, PROTOCOL, VERSION, IPHL, TTL, SRCADR, DSTADR, SRCPRT,
+        DSTPRT, LENGTH, CHCKSM)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''',
+                  (type, smac, dmac, prot, ver, iphl, ttl, srcadr, dstadr, srcprt, dstprt, len, chksm))
+    except lite.OperationalError:
+        pass
 
 def get_last_packet(amount):
     with datab:
-        read.execute('''SELECT * FROM (SELECT ID, TYPE, SRCADR, DSTADR, VERSION, SRCPRT, DSTPRT, TTL FROM PACKETS ORDER BY ID DESC LIMIT 13)
-        ORDER BY ID''')
-        data = read.fetchall()
-        return data
+        try:
+            read.execute('''SELECT * FROM (SELECT ID, TYPE, SRCADR, DSTADR, VERSION, SRCPRT, DSTPRT, TTL FROM PACKETS ORDER BY ID DESC LIMIT 13)
+            ORDER BY ID''')
+            data = read.fetchall()
+            return data
+        except lite.OperationalError:
+            pass

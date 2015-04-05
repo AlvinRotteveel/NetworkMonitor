@@ -58,7 +58,7 @@ class SocketCapture(Thread):
 
                     #now unpack them :)
                     tcph = unpack('!HHLLBBHHH', tcp_header)
-
+                    
                     source_port = tcph[0]
                     dest_port = tcph[1]
                     sequence = tcph[2]
