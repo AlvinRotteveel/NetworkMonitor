@@ -68,7 +68,7 @@ def live(stdscr):
     elif connection:
         draw_columns(stdscr)
         response = connection.send('live')
-        draw_packets_remote(stdscr, response)
+        draw_packets(stdscr, 22, 'live', True, response)
         draw_menu(stdscr, "Live Network Traffic")
         while True:
             ev = stdscr.getch()
@@ -80,11 +80,11 @@ def live(stdscr):
                 time.sleep(0.1)
                 stdscr.clear()
                 response = connection.send('live')
-                draw_packets_remote(stdscr, response)
+                draw_packets(stdscr, 22, 'live', True, response)
                 draw_menu(stdscr, "Live Network Traffic")
     else:
         draw_columns(stdscr)
-        draw_packets_local(stdscr)
+        draw_packets(stdscr, 22, 'live', False)
         draw_menu(stdscr, "Live Network Traffic")
         while True:
             ev = stdscr.getch()
@@ -95,7 +95,7 @@ def live(stdscr):
             else:
                 time.sleep(0.1)
                 stdscr.clear()
-                draw_packets_local(stdscr)
+                draw_packets(stdscr, 22, 'live', False)
                 draw_menu(stdscr, "Live Network Traffic")
 
 
@@ -332,10 +332,18 @@ def draw_columns(stdscr):
     addstr(stdscr, 20, 92, "TTL")
 
 
-def draw_packets_local(stdscr):
-    lineh = 22
+def draw_packets(stdscr, *args):
+    lineh = args[0]
+    mode = args[1]
+    remote = args[2]
+
+    if not remote:
+        data = get_last_packet('13')
+    elif remote:
+        data = args[3]
+
     draw_columns(stdscr)
-    data = get_last_packet('13')
+
 
     stdscr.nodelay(True)
 
@@ -354,27 +362,6 @@ def draw_packets_local(stdscr):
     except:
         pass
 
-
-def draw_packets_remote(stdscr, packets):
-    lineh = 22
-    draw_columns(stdscr)
-    data = packets
-    stdscr.nodelay(True)
-
-    try:
-        for l in data:
-            addstr(stdscr, lineh, 5, str(l[0]))
-            addstr(stdscr, lineh, 15, str(l[1]).upper())
-            addstr(stdscr, lineh, 22, str(l[2]))
-            addstr(stdscr, lineh, 42, str(l[3]))
-            addstr(stdscr, lineh, 62, str(l[4]).upper())
-            addstr(stdscr, lineh, 72, str(l[5]))
-            addstr(stdscr, lineh, 82, str(l[6]))
-            addstr(stdscr, lineh, 92, str(l[7]))
-            lineh += 1
-            stdscr.refresh()
-    except:
-        pass
 
 def draw_menu(stdscr, s):
     line = '=' * (WIDTH - 10)
